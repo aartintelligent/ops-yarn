@@ -1,8 +1,5 @@
 FROM debian:bullseye-slim
 
-ARG UID=1000
-ARG GID=1000
-
 ENV YARN_CACHE_FOLDER="/var/cache/yarn"
 
 RUN apt-get update \
@@ -20,13 +17,6 @@ tini \
 curl \
 wget \
 unzip
-
-RUN set -eux; \
-adduser -h /home/rootless -g "rootless" -D -u ${UID} rootless; \
-echo "rootless:${UID}:${GID}" >> /etc/subuid; \
-echo "rootless:${UID}:${GID}" >> /etc/subgid; \
-echo "rootless:rootless:${UID}:${GID}:/root:/bin" >> /etc/passwd; \
-echo "rootless::${GID}:rootless" >> /etc/group
 
 RUN apt-get update \
 &&  curl -sL https://deb.nodesource.com/setup_16.x | bash - \
@@ -49,9 +39,3 @@ chmod +x \
 /usr/bin/docker-*.sh
 
 ENTRYPOINT ["docker-entrypoint.sh"]
-
-WORKDIR /app
-
-CMD ["yarn"]
-
-USER rootless
